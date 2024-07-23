@@ -94,7 +94,6 @@ To add a new module function, proceed as follows:
 #include "thread.h"
 
 #include <intprops.h>
-#include <verify.h>
 
 /* Work around GCC bug 83162.  */
 #if GNUC_PREREQ (4, 3, 0)
@@ -1036,10 +1035,10 @@ import/export overhead on most platforms.
 
 /* Verify that emacs_limb_t indeed has unique object
    representations.  */
-verify (CHAR_BIT == 8);
-verify ((sizeof (emacs_limb_t) == 4 && EMACS_LIMB_MAX == 0xFFFFFFFF)
-        || (sizeof (emacs_limb_t) == 8
-            && EMACS_LIMB_MAX == 0xFFFFFFFFFFFFFFFF));
+static_assert (CHAR_BIT == 8);
+static_assert ((sizeof (emacs_limb_t) == 4 && EMACS_LIMB_MAX == 0xFFFFFFFF)
+	       || (sizeof (emacs_limb_t) == 8
+		   && EMACS_LIMB_MAX == 0xFFFFFFFFFFFFFFFF));
 
 static bool
 module_extract_big_integer (emacs_env *env, emacs_value arg, int *sign,
@@ -1077,7 +1076,7 @@ module_extract_big_integer (emacs_env *env, emacs_value arg, int *sign,
          suffice.  */
       EMACS_UINT u;
       enum { required = (sizeof u + size - 1) / size };
-      verify (0 < required && +required <= module_bignum_count_max);
+      static_assert (0 < required && +required <= module_bignum_count_max);
       if (magnitude == NULL)
         {
           *count = required;
@@ -1097,7 +1096,7 @@ module_extract_big_integer (emacs_env *env, emacs_value arg, int *sign,
         u = (EMACS_UINT) x;
       else
         u = -(EMACS_UINT) x;
-      verify (required * bits < PTRDIFF_MAX);
+      static_assert (required * bits < PTRDIFF_MAX);
       for (ptrdiff_t i = 0; i < required; ++i)
         magnitude[i] = (emacs_limb_t) (u >> (i * bits));
       MODULE_INTERNAL_CLEANUP ();
