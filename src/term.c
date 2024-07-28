@@ -4303,7 +4303,15 @@ use the Bourne shell command 'TERM=...; export TERM' (C-shell:\n\
      don't think we're losing anything by turning it off.  */
   tty->line_ins_del_ok = 0;
 
+#if defined(USE_W32VT16COLOR)
+  tty->TN_max_colors = 16;
+#elif defined(USE_W32VT256COLOR)
+  tty->TN_max_colors = 256;
+#elif defined(USE_W32VT24BITCOLOR)
+  tty->TN_max_colors = 16777216;
+#else
   tty->TN_max_colors = 16;  /* Must be non-zero for tty-display-color-p.  */
+#endif
 #endif	/* DOS_NT */
 
 #ifdef HAVE_GPM
